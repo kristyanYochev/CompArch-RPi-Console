@@ -44,7 +44,7 @@ unsigned long get_system_timer()
     return ((unsigned long) h << 32) | l;
 }
 
-void delay_ms_st(unsigned int delay)
+void delay_us_st(unsigned int delay)
 {
     unsigned long t = get_system_timer();
 

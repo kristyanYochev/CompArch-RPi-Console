@@ -32,8 +32,8 @@ void kernel_main()
     while(1)
     {
         digitalWrite(4, HIGH);
-        delay_ms_st(1000000);
+        delay_us_st(1000000);
         digitalWrite(4, LOW);
-        delay_ms_st(1000000);
+        delay_us_st(1000000);
     }
 }
