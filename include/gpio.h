@@ -12,6 +12,7 @@
 #define GPSET0      ((volatile unsigned int*)(MMIO_BASE+0x0020001C))
 #define GPSET1      ((volatile unsigned int*)(MMIO_BASE+0x00200020))
 #define GPCLR0      ((volatile unsigned int*)(MMIO_BASE+0x00200028))
+#define GPCLR1      ((volatile unsigned int*)(MMIO_BASE+0x0020002C))
 #define GPLEV0      ((volatile unsigned int*)(MMIO_BASE+0x00200034))
 #define GPLEV1      ((volatile unsigned int*)(MMIO_BASE+0x00200038))
 #define GPEDS0      ((volatile unsigned int*)(MMIO_BASE+0x00200040))
@@ -21,5 +22,32 @@
 #define GPPUD       ((volatile unsigned int*)(MMIO_BASE+0x00200094))
 #define GPPUDCLK0   ((volatile unsigned int*)(MMIO_BASE+0x00200098))
 #define GPPUDCLK1   ((volatile unsigned int*)(MMIO_BASE+0x0020009C))
+
+typedef enum pin_mode
+{
+    INPUT = 0x0,
+    OUTPUT = 0x1,
+    ALT0 = 0x4,
+    ALT1 = 0x5,
+    ALT2 = 0x6,
+    ALT3 = 0x7,
+    ALT4 = 0x3,
+    ALT5 = 0x2
+} pin_mode_t;
+
+typedef enum pin_state
+{
+    HIGH = 1,
+    LOW = 0
+} pin_state_t;
+
+extern volatile unsigned int * FSEL_REGISTERS[6];
+extern volatile unsigned int * SET_REGISTERS[2];
+extern volatile unsigned int * CLR_REGISTERS[2];
+extern volatile unsigned int * LEV_REGISTERS[2];
+
+void setPinMode(int pin, pin_mode_t pin_mode);
+void digitalWrite(int pin, pin_state_t value);
+pin_state_t digitalRead(int pin);
 
 #endif

@@ -14,7 +14,7 @@ HEADERS = $(wildcard $(HEAD_DIR)/*.h)
 
 IMG_NAME=kernel8
 
-build: $(OBJECTS) $(HEADERS)
+build: clean $(OBJECTS) $(HEADERS)
 	$(PREFIX)-ld $(LFLAGS) $(OBJECTS) -T linker.ld -o $(IMG_NAME).elf
 	$(PREFIX)-objcopy -O binary $(IMG_NAME).elf $(IMG_NAME).img
 
@@ -27,5 +27,5 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.S
 	$(PREFIX)-gcc $(CFLAGS) -I$(SRC_DIR) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR)
-	rm $(IMG_NAME).elf $(IMG_NAME).img
+	rm -rf $(OBJ_DIR) || true
+	rm $(IMG_NAME).elf $(IMG_NAME).img || true
