@@ -24,7 +24,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.S
 	mkdir -p $(@D)
-	$(PREFIX)-gcc $(CFLAGS) -I$(SRC_DIR) -c $< -o $@
+	$(PREFIX)-gcc $(CFLAGS) -I$(SRC_DIR) -I$(HEAD_DIR) -c $< -o $@
 
 clean:
 	rm -rf $(OBJ_DIR) || true
