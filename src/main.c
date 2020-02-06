@@ -1,14 +1,21 @@
 #include "uart.h"
-#include "framebuffer.h"
+#include "graphics.h"
+#include "homer.h"
 #include "gpio.h"
 #include "delay.h"
 
 void kernel_main()
 {
     uart_init();
-    fb_init();
+    graphics_init();
 
-    fb_showpicture();
+    // color_t RED = {
+    //     .color_array = {0xFF, 0x00, 0x00, 0x00}
+    // };
+
+    // draw_rectangle(100, 100, 100, 100, RED);
+
+    draw_image(homer_data, 100, 100, homer_width, homer_height);
 
     setPinMode(4, OUTPUT);
 

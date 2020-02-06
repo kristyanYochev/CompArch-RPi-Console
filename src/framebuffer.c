@@ -70,29 +70,33 @@ void fb_showpicture()
 {
     int x, y;
 
-    unsigned char * ptr = fb;
+    // unsigned char * ptr = fb;
     char * data = homer_data;
-    char pixel[4];
+    color_t pixel;
 
-    ptr += (height - homer_height) / 2 * pitch + (width - homer_width) * 2;
+    // ptr += (height - homer_height) / 2 * pitch + (width - homer_width) * 2;
     for (y = 0; y < homer_height; ++y)
     {
         for (x = 0; x < homer_width; ++x)
         {
-            HEADER_PIXEL(data, pixel);
-
-            if (isrgb)
-            {
-                *((unsigned int *)ptr) = *((unsigned int *)&pixel);
-            }
-            else
-            {
-                // Flip R and B values for BGR
-                *((unsigned int *)ptr) = (unsigned int)(pixel[0]<<16 | pixel[1]<<8 | pixel[2]);
-            }
-            
-            ptr += 4;
+            HEADER_PIXEL(data, pixel.color_array)
+            fb_write_pixel((width - homer_width) / 2 + x, (height - homer_height) / 2 + y, pixel);
         }
-        ptr += pitch - homer_width * 4;
+    }
+}
+
+void fb_write_pixel(unsigned int x, unsigned int y, color_t color)
+{
+    unsigned char * ptr = fb;
+    ptr += y * pitch + x * 4;
+    
+    if (isrgb)
+    {
+        *((unsigned int *)ptr) = *((unsigned int *) &color.color);
+    }
+    else
+    {
+        // Flip R and B values (i.e cvt RGB to BGR)
+        *((unsigned int *)ptr) = (unsigned int) (color.color_array[0] << 16 | color.color_array[1] << 8 | color.color_array[2]);
     }
 }
