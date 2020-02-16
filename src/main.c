@@ -3,16 +3,11 @@
 // #include "homer.h"
 #include "gpio.h"
 #include "delay.h"
+#include "spi.h"
+#include "string.h"
 
 void kernel_main()
 {
-    uart_init();
-    graphics_init();
-
-    color_t RED = {
-        .color_array = {0xFF, 0x00, 0x00, 0x00}
-    };
-
     color_t WHITE = {
         .color_array = {0xFF, 0xFF, 0xFF, 0x00}
     };
@@ -21,19 +16,17 @@ void kernel_main()
         .color_array = {0x00, 0x00, 0x00, 0x00}
     };
 
-    // draw_rectangle(100, 100, 100, 100, RED);
+    uart_init();
+    graphics_init();
+    spi_init(32);
 
-    // draw_image(homer_data, 100, 100, homer_width, homer_height);
+    unsigned char bytes[2] = {0xFA, 0xCE};
+    char hex_string[3];
 
-    draw_text(100, 100, "- Hello World!\n- I have a GF.", RED, BLACK);
+    for (int i = 0; i < 2; ++i) {
+        unsigned char byte = spi_transfer(bytes[i]);
+        byte_to_hex(byte, hex_string);
 
-    setPinMode(4, OUTPUT);
-
-    while(1)
-    {
-        digitalWrite(4, HIGH);
-        delay_us_st(1000000);
-        digitalWrite(4, LOW);
-        delay_us_st(1000000);
+        draw_text(i*20, 10, hex_string, WHITE, BLACK);
     }
 }
