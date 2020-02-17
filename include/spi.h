@@ -14,9 +14,6 @@
 #define SPI_DC          ((volatile unsigned int *)(SPI_BASE + 0x14))
 
 void spi_init(short clock_divisor);
-// void spi_write(unsigned char * data, unsigned int length);
-// void spi_read(unsigned char * data, unsigned int length);
-
 unsigned char spi_transfer(unsigned char data);
 
 #endif
