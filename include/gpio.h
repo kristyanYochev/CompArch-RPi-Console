@@ -41,13 +41,22 @@ typedef enum pin_state
     LOW = 0
 } pin_state_t;
 
+typedef enum pull_up_down
+{
+    PD_OFF = 0,
+    PD_DOWN = 1,
+    PD_UP = 2
+} pull_up_down_t;
+
 extern volatile unsigned int * FSEL_REGISTERS[6];
 extern volatile unsigned int * SET_REGISTERS[2];
 extern volatile unsigned int * CLR_REGISTERS[2];
 extern volatile unsigned int * LEV_REGISTERS[2];
 
-void setPinMode(int pin, pin_mode_t pin_mode);
-void digitalWrite(int pin, pin_state_t value);
-pin_state_t digitalRead(int pin);
+void set_pin_mode(int pin, pin_mode_t pin_mode);
+void digital_write(int pin, pin_state_t value);
+pin_state_t digital_read(int pin);
+void set_pull_up_down(pull_up_down_t pd);
+void set_pull_up_down_pin(int pin);
 
 #endif

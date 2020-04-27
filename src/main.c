@@ -5,6 +5,7 @@
 #include "delay.h"
 #include "spi.h"
 #include "string.h"
+#include "i2c.h"
 
 void kernel_main()
 {
@@ -18,15 +19,26 @@ void kernel_main()
 
     uart_init();
     graphics_init();
-    spi_init(32);
+    i2c_init();
 
     unsigned char bytes[2] = {0xFA, 0xCE};
-    char hex_string[3];
 
-    for (int i = 0; i < 2; ++i) {
-        unsigned char byte = spi_transfer(bytes[i]);
-        byte_to_hex(byte, hex_string);
+    draw_text(0, 0, "Transfering...", WHITE, BLACK);
 
-        draw_text(i*20, 10, hex_string, WHITE, BLACK);
+    int status = i2c_write_bytes(0x14, bytes, 2);
+
+    switch(status)
+    {
+        case 0:
+            draw_text(0, 30, "Transfer Done!", WHITE, BLACK);
+            break;
+        case 1:
+            draw_text(0, 30, "Transfer ERR!", WHITE, BLACK);
+            break;
+        case 2:
+            draw_text(0, 30, "Transfer TIMEOUT!", WHITE, BLACK);
+            break;
+        default:
+            break;
     }
 }

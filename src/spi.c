@@ -28,7 +28,7 @@ void spi_init(short clock_divisor)
 
     for (int i = 7; i <= 11; ++i)
     {
-        setPinMode(i, ALT0);
+        set_pin_mode(i, ALT0);
     }
 }
 

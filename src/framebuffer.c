@@ -100,3 +100,13 @@ void fb_write_pixel(unsigned int x, unsigned int y, color_t color)
         *((unsigned int *)ptr) = (unsigned int) (color.color_array[0] << 16 | color.color_array[1] << 8 | color.color_array[2]);
     }
 }
+
+unsigned int get_screen_width()
+{
+    return width;
+}
+
+unsigned int get_screen_height()
+{
+    return height;
+}
