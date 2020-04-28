@@ -15,5 +15,7 @@
 
 void spi_init(short clock_divisor);
 unsigned char spi_transfer(unsigned char data);
+void spi_send_byte(unsigned char byte);
+void spi_send_byte_async(unsigned char byte);
 
 #endif

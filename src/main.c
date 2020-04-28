@@ -19,26 +19,13 @@ void kernel_main()
 
     uart_init();
     graphics_init();
-    i2c_init();
+    spi_init(0x05DC);
 
-    unsigned char bytes[2] = {0xFA, 0xCE};
+    spi_send_byte_async(0xFA);
+    delay_cycles(10000);
+    spi_send_byte_async(0xCE);
 
-    draw_text(0, 0, "Transfering...", WHITE, BLACK);
-
-    int status = i2c_write_bytes(0x14, bytes, 2);
-
-    switch(status)
-    {
-        case 0:
-            draw_text(0, 30, "Transfer Done!", WHITE, BLACK);
-            break;
-        case 1:
-            draw_text(0, 30, "Transfer ERR!", WHITE, BLACK);
-            break;
-        case 2:
-            draw_text(0, 30, "Transfer TIMEOUT!", WHITE, BLACK);
-            break;
-        default:
-            break;
-    }
+    draw_text(0, 0, "DONE TRANSFER", WHITE, BLACK);
+    
+    while (1);
 }

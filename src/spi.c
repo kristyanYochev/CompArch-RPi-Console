@@ -54,3 +54,24 @@ unsigned char spi_transfer(unsigned char data)
 
     return rv;
 }
+
+void spi_send_byte_async(unsigned char byte)
+{
+    *SPI_CS |= (1 << 7);
+
+    while(1)
+    {
+        if ((*SPI_CS) & (1 << 18)) break;
+    }
+    *SPI_FIFO = byte;
+}
+
+void spi_send_byte(unsigned char byte)
+{
+    spi_send_byte(byte);
+    
+    while (1)
+    {
+        if ((*SPI_CS) & (1 << 16)) break;
+    }
+}
