@@ -34,6 +34,7 @@ void spi_init(short clock_divisor)
 
 unsigned char spi_transfer(unsigned char data)
 {
+    *SPI_CS |= (0b11 << 4); // Clear the FIFO
     *SPI_CS |= (1 << 7); // Transfer active
 
     while(1)
@@ -44,10 +45,16 @@ unsigned char spi_transfer(unsigned char data)
 
     unsigned char rv = 0x00;
 
-    while (1) // while not done
+    while (1)
     {
         if ((*SPI_CS) & (1 << 16)) break;
     }
+
+    while (1)
+    {
+        if ((*SPI_CS) & (1 << 17)) break;
+    }
+
     rv = *SPI_FIFO;
 
     *SPI_CS &= (1 << 7) ^ (0xFFFFFFFF); // Transfer incative
