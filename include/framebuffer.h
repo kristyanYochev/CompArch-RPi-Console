@@ -14,6 +14,9 @@ typedef union color_t
     } color_struct;
 } color_t;
 
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
+
 void fb_init();
 void fb_showpicture();
 void fb_write_pixel(unsigned int x, unsigned int y, color_t color);

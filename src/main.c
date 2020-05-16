@@ -19,17 +19,31 @@ void kernel_main()
 
     uart_init();
     graphics_init();
-    // spi_init(0x05DC);
-    spi_init(0);
+    spi_init(0x3E);
     
-    char hex_string[12];
+    char bin_string[12];
+    bin_string[0] = '\0';
 
-    unsigned char recieved_byte = spi_transfer(0xFA);
+    unsigned char recieved_byte;
 
-    byte_to_bin(recieved_byte, hex_string);
+    // draw_text(0, 0, "TRANFERED DATA", WHITE, BLACK);
+    // draw_text(0, 30, hex_string, WHITE, BLACK);
 
-    draw_text(0, 0, "TRANFERED DATA", WHITE, BLACK);
-    draw_text(0, 30, hex_string, WHITE, BLACK);
-    
-    while (1);
+    set_pin_mode(17, OUTPUT);
+    digital_write(17, LOW);
+
+    digital_write(17, HIGH);
+    delay_us(1000000);
+
+    while (1) {
+        draw_text(0, 0, bin_string, WHITE, BLACK);
+        digital_write(17, HIGH);
+        delay_us(100000);
+
+        recieved_byte = spi_transfer(0xFA);
+        byte_to_bin(recieved_byte, bin_string);
+        
+        digital_write(17, LOW);
+        clear_screen(BLACK);
+    }
 }
