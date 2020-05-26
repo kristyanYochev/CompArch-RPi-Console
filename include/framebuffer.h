@@ -20,6 +20,8 @@ typedef union color_t
 void fb_init();
 void fb_showpicture();
 void fb_write_pixel(unsigned int x, unsigned int y, color_t color);
+void fb_clear();
+void fb_show();
 unsigned int get_screen_width();
 unsigned int get_screen_height();
 

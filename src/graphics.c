@@ -98,5 +98,10 @@ void draw_text(unsigned int x, unsigned int y, const char * text, color_t text_c
 
 void clear_screen(color_t color)
 {
-    draw_rectangle(0, 0, get_screen_width(), get_screen_height(), color);
+    fb_clear();
+}
+
+void show_screen()
+{
+    fb_show();
 }

@@ -28,6 +28,8 @@ volatile unsigned int __attribute__((aligned(16))) mailbox[36];
 #define MAILBOX_TAG_UARTCLK         2
 #define MAILBOX_TAG_LAST            0
 
+#define MAILBOX_TAG_BLANK_SCREEN    0x40002
+
 int mailbox_send(unsigned char channel);
 
 #endif

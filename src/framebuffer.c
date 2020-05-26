@@ -110,3 +110,33 @@ unsigned int get_screen_height()
 {
     return height;
 }
+
+void fb_clear()
+{
+    mailbox[0] = 7 * 4;
+    mailbox[1] = MAILBOX_REQUEST;
+
+    mailbox[2] = MAILBOX_TAG_BLANK_SCREEN;
+    mailbox[3] = 4;
+    mailbox[4] = 4;
+    mailbox[5] = 1;
+
+    mailbox[6] = MAILBOX_TAG_LAST;
+
+    mailbox_send(MAILBOX_CH_PROP);
+}
+
+void fb_show()
+{
+    mailbox[0] = 7 * 4;
+    mailbox[1] = MAILBOX_REQUEST;
+
+    mailbox[2] = MAILBOX_TAG_BLANK_SCREEN;
+    mailbox[3] = 4;
+    mailbox[4] = 4;
+    mailbox[5] = 0;
+
+    mailbox[6] = MAILBOX_TAG_LAST;
+
+    mailbox_send(MAILBOX_CH_PROP);
+}

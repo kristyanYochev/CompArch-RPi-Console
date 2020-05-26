@@ -7,6 +7,20 @@
 #include "string.h"
 #include "i2c.h"
 
+typedef union controller_input_t {
+    struct buttons_t {
+        char a: 1;
+        char b: 1;
+        char start: 1;
+        char select: 1;
+        char left: 1;
+        char down: 1;
+        char right: 1;
+        char up: 1;
+    } buttons;
+    unsigned char repr_byte;
+} controller_input_t;
+
 void kernel_main()
 {
     color_t WHITE = {
@@ -24,26 +38,19 @@ void kernel_main()
     char bin_string[12];
     bin_string[0] = '\0';
 
-    unsigned char recieved_byte;
+    unsigned char input;
 
     // draw_text(0, 0, "TRANFERED DATA", WHITE, BLACK);
     // draw_text(0, 30, hex_string, WHITE, BLACK);
 
-    set_pin_mode(17, OUTPUT);
-    digital_write(17, LOW);
-
-    digital_write(17, HIGH);
-    delay_us(1000000);
-
     while (1) {
-        draw_text(0, 0, bin_string, WHITE, BLACK);
-        digital_write(17, HIGH);
-        delay_us(100000);
-
-        recieved_byte = spi_transfer(0xFA);
-        byte_to_bin(recieved_byte, bin_string);
+        byte_to_bin(input, bin_string);
+        input = spi_transfer(0xAC);
         
-        digital_write(17, LOW);
+        delay_us(1000000 / 60);
+
         clear_screen(BLACK);
+        draw_text(0, 0, bin_string, WHITE, BLACK);
+        show_screen();
     }
 }
