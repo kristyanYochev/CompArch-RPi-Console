@@ -53,3 +53,17 @@ void delay_us_st(unsigned int delay)
         while (get_system_timer() < t + delay);
     }
 }
+
+void limit_rate(unsigned int rate)
+{
+    static unsigned long t;
+    if (t)
+    {
+        while (get_system_timer() < t + 1000000 / rate) ;
+        t = get_system_timer();
+    }
+    else
+    {
+        t = get_system_timer();
+    }
+}

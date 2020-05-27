@@ -14,6 +14,7 @@
 #define SPI_DC          ((volatile unsigned int *)(SPI_BASE + 0x14))
 
 void spi_init(short clock_divisor);
+void select_slave(short slave_number);
 unsigned char spi_transfer(unsigned char data);
 void spi_send_byte(unsigned char byte);
 void spi_send_byte_async(unsigned char byte);

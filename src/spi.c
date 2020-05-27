@@ -32,6 +32,14 @@ void spi_init(short clock_divisor)
     }
 }
 
+void select_slave(short slave_number)
+{
+    unsigned int r = *SPI_CS;
+    r &= ~(0b11);
+    r |= (0b11 & (slave_number & 0b11));
+    *SPI_CS = r;
+}
+
 unsigned char spi_transfer(unsigned char data)
 {
     *SPI_CS |= (0b11 << 4); // Clear the FIFO
