@@ -5,6 +5,11 @@
 #include <delay.h>
 #include <rand.h>
 
+char colliding(
+    int x1, int y1, int width1, int height1,
+    int x2, int y2, int width2, int height2
+);
+
 #pragma region colors
 static const color_t BLACK = {
     .color_array = {0x00, 0x00, 0x00, 0x00}
@@ -133,6 +138,28 @@ static void main_menu()
     }
 }
 
+typedef struct {
+    int x;
+    int y;
+    int width;
+    int height;
+    char hit;
+} brick_t;
+
+static void init_brick(brick_t * brick, int x, int y, int width, int height)
+{
+    brick->x = x;
+    brick->y = y;
+    brick->width = width;
+    brick->height = height;
+    brick->hit = 0;
+}
+
+static void draw_brick(brick_t * brick)
+{
+    draw_rectangle(brick->x, brick->y, brick->width, brick->height, ((brick->hit) ? BLACK : RED));
+}
+
 static void game()
 {
     game_object_t player;
@@ -140,7 +167,21 @@ static void game()
 
     game_object_t ball;
     init_game_object(&ball, 525, 640, 10, 10, WHITE);
-    
+
+#define BRICK_COUNT 40
+
+    brick_t bricks[BRICK_COUNT];
+
+    for (int i = 0; i < BRICK_COUNT; i++)
+    {
+        init_brick(&bricks[i],
+            16 + (i % 10) * ((1024 - 32) / 10), 
+            32 + (i / 10) * 30,
+            ((1024 - 32) / 10) - 20,
+            20
+        );
+    }
+
     char ball_released = 0;
     char exits = 0;
 
@@ -149,6 +190,11 @@ static void game()
     ball.speed_x = 20;
 
     rand_init();
+
+    for (int i = 0; i < BRICK_COUNT; i++)
+    {
+        draw_brick(&bricks[i]);
+    }
 
     while (!exits)
     {
@@ -197,13 +243,46 @@ static void game()
             ball.speed_y = -ball.speed_y;
         }
 
-        if (ball.x >= player.x && 
-            ball.x + ball.width <= player.x + player.width &&
-            ball.y >= player.y &&
-            ball.y + ball.height <= player.y + player.height)
+        if (colliding(
+            ball.x, ball.y, ball.width, ball.height,
+            player.x, player.y, player.width, player.height
+        ))
         {
             ball.speed_y = -ball.speed_y;
             ball.speed_x = 50 * (ball.x - player.x - player.width/2) / player.width;
+        }
+
+        for (int i = 0; i < BRICK_COUNT; i++)
+        {
+            if (bricks[i].hit) continue;
+
+            if (colliding(
+                ball.x, ball.y, ball.width, ball.height,
+                bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height
+            ))
+            {
+                if (bricks[i].x < ball.x + ball.width / 2 &&
+                    ball.x + ball.width / 2 < bricks[i].x + bricks[i].width)
+                {
+                    bricks[i].hit = 1;
+                    draw_brick(&bricks[i]);
+                    ball.speed_y = -ball.speed_y;
+                }
+                else if (bricks[i].y < ball.y + ball.height / 2 &&
+                    ball.y + ball.height / 2 < bricks[i].y + bricks[i].height)
+                {
+                    bricks[i].hit = 1;
+                    draw_brick(&bricks[i]);
+                    ball.speed_x = -ball.speed_x;
+                }
+                else
+                {
+                    bricks[i].hit = 1;
+                    draw_brick(&bricks[i]);
+                    ball.speed_x = -ball.speed_x;
+                    ball.speed_y = -ball.speed_y;
+                }
+            }
         }
 
         update_game_object(&player);
@@ -211,6 +290,7 @@ static void game()
 
         draw_game_object(&player);
         draw_game_object(&ball);
+
         draw_rectangle(0, 0, 1, get_screen_height(), WHITE);
         draw_rectangle(get_screen_width() - 1, 0, 1, get_screen_height(), WHITE);
         // show_screen();
@@ -296,3 +376,15 @@ static void set_game_object_position(game_object_t * object, int x, int y)
     object->y = y;
 }
 #pragma endregion
+
+char colliding(
+    int x1, int y1, int width1, int height1,
+    int x2, int y2, int width2, int height2
+)
+{
+    if (x1 >= x2 + width2 || x2 >= x1 + width1) return 0;
+
+    if (y1 >= y2 + height2 || y2 >= y1 + height1) return 0;
+
+    return 1;
+}
