@@ -4,5 +4,6 @@
 void byte_to_hex(unsigned char byte, char * output);
 void byte_to_bin(unsigned char byte, char * output);
 char * strcpy(char * dst, const char * src);
+void itoa(char * src, int number, int length);
 
 #endif

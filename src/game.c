@@ -169,6 +169,9 @@ static void game()
     game_object_t ball;
     init_game_object(&ball, 525, 640, 10, 10, WHITE);
 
+    int score = 0;
+    char score_text[3] = {"0"};
+
 #define BRICK_COUNT 40
 
     brick_t bricks[BRICK_COUNT];
@@ -271,6 +274,8 @@ static void game()
                     ball.x + ball.width / 2 < bricks[i].x + bricks[i].width)
                 {
                     bricks[i].hit = 1;
+                    score++;
+                    itoa(score_text, score, 3);
                     draw_brick(&bricks[i]);
                     ball.speed_y = -ball.speed_y;
                 }
@@ -278,12 +283,16 @@ static void game()
                     ball.y + ball.height / 2 < bricks[i].y + bricks[i].height)
                 {
                     bricks[i].hit = 1;
+                    score++;
+                    itoa(score_text, score, 3);
                     draw_brick(&bricks[i]);
                     ball.speed_x = -ball.speed_x;
                 }
                 else
                 {
                     bricks[i].hit = 1;
+                    score++;
+                    itoa(score_text, score, 3);
                     draw_brick(&bricks[i]);
                     ball.speed_x = -ball.speed_x;
                     ball.speed_y = -ball.speed_y;
@@ -297,6 +306,9 @@ static void game()
         draw_game_object(&player);
         draw_game_object(&ball);
 
+        draw_text(10, 0, "Score: ", WHITE, BLACK);
+        draw_text(80, 0, score_text, WHITE, BLACK);
+
         draw_rectangle(0, 0, 1, get_screen_height(), WHITE);
         draw_rectangle(get_screen_width() - 1, 0, 1, get_screen_height(), WHITE);
         // show_screen();
@@ -309,6 +321,7 @@ static void game()
 
     draw_rectangle(player.x, player.y, player.width, player.height, BLACK);
     draw_rectangle(ball.x, ball.y, ball.width, ball.height, BLACK);
+    draw_rectangle(10, 0, 150, 30, BLACK);
 
     game_over();
 }

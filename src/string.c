@@ -28,3 +28,15 @@ char * strcpy(char * dst, const char * src)
     dst[i] = '\0';
     return dst;
 }
+
+void itoa(char * src, int number, int length)
+{
+    int i;
+    for (i = 1; i <= length; i++)
+    {
+        src[length - i] = (number % 10) + '0';
+        number /= 10;
+    }
+
+    src[i - 1] = '\0';
+}
