@@ -65,6 +65,7 @@ static void draw_game_object(game_object_t * object);
 
 static void main_menu();
 static void game();
+static void game_over();
 
 void start_game()
 {
@@ -243,6 +244,11 @@ static void game()
             ball.speed_y = -ball.speed_y;
         }
 
+        if (ball.y + ball.height >= get_screen_height())
+        {
+            exits = 1;
+        }
+
         if (colliding(
             ball.x, ball.y, ball.width, ball.height,
             player.x, player.y, player.width, player.height
@@ -295,6 +301,32 @@ static void game()
         draw_rectangle(get_screen_width() - 1, 0, 1, get_screen_height(), WHITE);
         // show_screen();
     }
+
+    for (int i = 0; i < BRICK_COUNT; i++)
+    {
+        draw_rectangle(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height, BLACK);
+    }
+
+    draw_rectangle(player.x, player.y, player.width, player.height, BLACK);
+    draw_rectangle(ball.x, ball.y, ball.width, ball.height, BLACK);
+
+    game_over();
+}
+
+static void game_over()
+{
+    draw_text(480, 350, "GAME OVER!!!!\nPress Start to go to main menu!", BLACK, WHITE);
+
+    controller_input_t input = get_controller_state(0);
+
+    while(!input.input_data.start)
+    {
+        input = get_controller_state(0);
+    }
+
+    clear_text(480, 350, "GAME OVER!!!!\nPress Start to go to main menu!", BLACK);
+
+    main_menu();
 }
 #pragma endregion
 
