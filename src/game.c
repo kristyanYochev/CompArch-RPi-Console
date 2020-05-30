@@ -234,7 +234,7 @@ static void game()
         {
             ball_released = 1;
             ball.speed_x = rand(-10, 10);
-            ball.speed_y = rand(-10, -5);
+            ball.speed_y = -8;
         }
 
         if (ball.x <= 0 || ball.x + ball.width >= get_screen_width())
