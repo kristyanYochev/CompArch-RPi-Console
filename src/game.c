@@ -136,7 +136,7 @@ static void main_menu()
 static void game()
 {
     game_object_t player;
-    init_game_object(&player, 480, 650, 100, 10, PLAYER_COLOR);
+    init_game_object(&player, 480, 650, 150, 21, PLAYER_COLOR);
 
     game_object_t ball;
     init_game_object(&ball, 525, 640, 10, 10, WHITE);
@@ -183,8 +183,27 @@ static void game()
         if (input.input_data.a && !ball_released)
         {
             ball_released = 1;
-            ball.speed_x = rand(-30, 30);
-            ball.speed_y = rand(-30, 0);
+            ball.speed_x = rand(-10, 10);
+            ball.speed_y = rand(-10, -5);
+        }
+
+        if (ball.x <= 0 || ball.x + ball.width >= get_screen_width())
+        {
+            ball.speed_x = -ball.speed_x;
+        }
+
+        if (ball.y <= 0)
+        {
+            ball.speed_y = -ball.speed_y;
+        }
+
+        if (ball.x >= player.x && 
+            ball.x + ball.width <= player.x + player.width &&
+            ball.y >= player.y &&
+            ball.y + ball.height <= player.y + player.height)
+        {
+            ball.speed_y = -ball.speed_y;
+            ball.speed_x = 50 * (ball.x - player.x - player.width/2) / player.width;
         }
 
         update_game_object(&player);
@@ -192,6 +211,8 @@ static void game()
 
         draw_game_object(&player);
         draw_game_object(&ball);
+        draw_rectangle(0, 0, 1, get_screen_height(), WHITE);
+        draw_rectangle(get_screen_width() - 1, 0, 1, get_screen_height(), WHITE);
         // show_screen();
     }
 }
@@ -238,7 +259,7 @@ static void init_game_object(game_object_t * object, int x, int y, int width, in
 static void draw_game_object(game_object_t * object)
 {
     draw_rectangle(object->prev_x, object->prev_y, object->width, object->height, BLACK);
-    delay_us_st(100);
+    delay_us_st(object->height + 20);
     draw_rectangle(object->x, object->y, object->width, object->height, object->color);
 }
 
