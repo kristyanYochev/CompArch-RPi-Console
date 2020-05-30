@@ -3,6 +3,7 @@
 #include <graphics.h>
 #include <controller.h>
 #include <delay.h>
+#include <rand.h>
 
 #pragma region colors
 static const color_t BLACK = {
@@ -147,6 +148,8 @@ static void game()
 
     ball.speed_x = 20;
 
+    rand_init();
+
     while (!exits)
     {
         limit_rate(30);
@@ -180,7 +183,8 @@ static void game()
         if (input.input_data.a && !ball_released)
         {
             ball_released = 1;
-            ball.speed_x = 0;
+            ball.speed_x = rand(-30, 30);
+            ball.speed_y = rand(-30, 0);
         }
 
         update_game_object(&player);

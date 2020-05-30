@@ -16,7 +16,7 @@ void rand_init()
     while (!((*RNG_STATUS) >> 24));
 }
 
-unsigned int rand(unsigned int min, unsigned int max)
+int rand(int min, int max)
 {
     return *RNG_DATA % (max - min) + min;
 }
