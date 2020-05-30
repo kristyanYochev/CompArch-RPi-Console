@@ -7,6 +7,7 @@
 #include "string.h"
 #include "i2c.h"
 #include "game.h"
+#include "mailbox.h"
 
 void kernel_main()
 {

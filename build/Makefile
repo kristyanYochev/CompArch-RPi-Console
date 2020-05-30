@@ -1,6 +1,6 @@
 PREFIX = aarch64-none-elf
 
-CFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -nostartfiles
+CFLAGS = -Wall -Wno-unknown-pragmas -O2 -ffreestanding -nostdinc -nostdlib -nostartfiles
 LFLAGS = -nostdlib -nostartfiles
 
 SRC_DIR = ../src

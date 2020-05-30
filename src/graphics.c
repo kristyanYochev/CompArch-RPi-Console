@@ -96,6 +96,26 @@ void draw_text(unsigned int x, unsigned int y, const char * text, color_t text_c
     }
 }
 
+void clear_text(unsigned int x, unsigned int y, const char * text, color_t color)
+{
+    unsigned int start_x = x;
+    psf_t * font = (psf_t *) &_font_data; 
+    for (int i = 0; text[i] != '\0'; ++i)
+    {
+        if (text[i] == '\n')
+        {
+            x = start_x;
+            y += font->height;
+        }
+        else
+        {
+            draw_rectangle(x, y, font->width, font->height, color);
+            x += font->width;
+        }
+        
+    }
+}
+
 void clear_screen()
 {
     fb_clear();

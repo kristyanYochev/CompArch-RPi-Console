@@ -4,6 +4,25 @@
 #include <controller.h>
 #include <delay.h>
 
+#pragma region colors
+static const color_t BLACK = {
+    .color_array = {0x00, 0x00, 0x00, 0x00}
+};
+
+static const color_t WHITE = {
+    .color_array = {0xFF, 0xFF, 0xFF, 0x00}
+};
+
+static const color_t RED = {
+    .color_array = {0xFF, 0x00, 0x00, 0x00}
+};
+
+static const color_t PLAYER_COLOR = {
+    .color_array = {0x00, 0x00, 0xFF, 0x00}
+};
+#pragma endregion
+
+#pragma region menu_item_declaration
 #define MENU_ITEMS_COUNT 2
 
 typedef struct {
@@ -12,19 +31,41 @@ typedef struct {
     unsigned int y;
 } menu_item_t;
 
-static color_t BLACK = {
-    .color_array = {0x00, 0x00, 0x00, 0x00}
-};
-
-static color_t WHITE = {
-    .color_array = {0xFF, 0xFF, 0xFF, 0x00}
-};
-
-
 static void init_menu_item(menu_item_t * item, char * content, unsigned int x, unsigned int y);
 static void show_menu_item_active(menu_item_t * item);
 static void show_menu_item_inactive(menu_item_t * item);
+static void clear_menu_item(menu_item_t * item);
+#pragma endregion
 
+#pragma region game_object_declaration
+typedef struct {
+    int x;
+    int y;
+    int prev_x;
+    int prev_y;
+    int width;
+    int height;
+    int speed_x;
+    int speed_y;
+    color_t color;
+} game_object_t;
+
+static void init_game_object(game_object_t * object, int x, int y, int width, int height, color_t color);
+static void update_game_object(game_object_t * object);
+static void set_game_object_position(game_object_t * object, int x, int y);
+static void draw_game_object(game_object_t * object);
+
+#pragma endregion
+
+static void main_menu();
+static void game();
+
+void start_game()
+{
+    main_menu();
+}
+
+#pragma region game_scenes
 static void main_menu()
 {
     menu_item_t items[MENU_ITEMS_COUNT];
@@ -37,7 +78,9 @@ static void main_menu()
     controller_input_t last_input;
     last_input.raw_data = 0x00;
 
-    while (1)
+    char exits = 0;
+
+    while (!exits)
     {
         limit_rate(30);
         input = get_controller_state(0);
@@ -51,9 +94,13 @@ static void main_menu()
             selected_menu_item = (selected_menu_item - 1) % MENU_ITEMS_COUNT;
         }
 
+        if (input.input_data.select)
+        {
+            exits = 1;
+        }
+
         last_input = input;
 
-        clear_screen();
         for (int i = 0; i < MENU_ITEMS_COUNT; i++)
         {
             if (i == selected_menu_item)
@@ -67,13 +114,86 @@ static void main_menu()
         }
         show_screen();
     }
+
+    for (int i = 0; i < MENU_ITEMS_COUNT; i++)
+    {
+        clear_menu_item(&items[i]);
+    }
+
+    switch (selected_menu_item)
+    {
+        case 0:
+            game();
+            break;
+        case 1:
+            return;
+        default:
+            break;
+    }
 }
 
-void start_game()
+static void game()
 {
-    main_menu();
-}
+    game_object_t player;
+    init_game_object(&player, 480, 650, 100, 10, PLAYER_COLOR);
 
+    game_object_t ball;
+    init_game_object(&ball, 525, 640, 10, 10, WHITE);
+    
+    char ball_released = 0;
+    char exits = 0;
+
+    controller_input_t input;
+
+    ball.speed_x = 20;
+
+    while (!exits)
+    {
+        limit_rate(30);
+        input = get_controller_state(0);
+
+        if (input.input_data.left)
+        {
+            player.speed_x = -20;
+            if (!ball_released)
+            {
+                ball.speed_x = -20;
+            }
+        }
+        else if (input.input_data.right)
+        {
+            player.speed_x = 20;
+            if (!ball_released)
+            {
+                ball.speed_x = 20;
+            }
+        }
+        else
+        {
+            player.speed_x = 0;
+            if (!ball_released)
+            {
+                ball.speed_x = 0;
+            }
+        }
+
+        if (input.input_data.a && !ball_released)
+        {
+            ball_released = 1;
+            ball.speed_x = 0;
+        }
+
+        update_game_object(&player);
+        update_game_object(&ball);
+
+        draw_game_object(&player);
+        draw_game_object(&ball);
+        // show_screen();
+    }
+}
+#pragma endregion
+
+#pragma region menu_item_implementation
 static void init_menu_item(menu_item_t * item, char * content, unsigned int x, unsigned int y)
 {
     strcpy(item->content, content);
@@ -90,3 +210,64 @@ static void show_menu_item_inactive(menu_item_t * item)
 {
     draw_text(item->x, item->y, item->content, WHITE, BLACK);
 }
+
+static void clear_menu_item(menu_item_t * item)
+{
+    clear_text(item->x, item->y, item->content, BLACK);
+}
+#pragma endregion
+
+#pragma region game_object_implementation
+static void init_game_object(game_object_t * object, int x, int y, int width, int height, color_t color)
+{
+    object->x = x;
+    object->y = y;
+    object->prev_x = x;
+    object->prev_y = y;
+    object->width = width;
+    object->height = height;
+    object->speed_x = 0;
+    object->speed_y = 0;
+    object->color = color;
+}
+
+static void draw_game_object(game_object_t * object)
+{
+    draw_rectangle(object->prev_x, object->prev_y, object->width, object->height, BLACK);
+    delay_us_st(100);
+    draw_rectangle(object->x, object->y, object->width, object->height, object->color);
+}
+
+static void update_game_object(game_object_t * object)
+{
+    set_game_object_position(object, object->x + object->speed_x, object->y + object->speed_y);
+}
+
+static void set_game_object_position(game_object_t * object, int x, int y)
+{
+    if (x < 0)
+    {
+        x = 0;
+    }
+
+    if (x + object->width > get_screen_width())
+    {
+        x = get_screen_width() - object->width;
+    }
+
+    if (y < 0)
+    {
+        y = 0;
+    }
+
+    if (y + object->height > get_screen_height())
+    {
+        y = get_screen_height() - object->height;
+    }
+
+    object->prev_x = object->x;
+    object->prev_y = object->y;
+    object->x = x;
+    object->y = y;
+}
+#pragma endregion
